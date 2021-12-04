@@ -52,9 +52,7 @@ function checkBoard(board) {
 
 function sumBoard(board) {
   var allRemaining = board.rows.flat();
-  // console.log(allRemaining);
   var filtered = allRemaining.filter((a) => a != "#").map((b) => parseInt(b));
-  // console.log(filtered);
   var sum = filtered.reduce((a, c) => a + c);
   return sum;
 }
@@ -63,7 +61,6 @@ function solvePart1(data) {
   data = parseData(data);
   const numbersToDraw = data.numbersDrawn.split(",");
   console.log(`Numbers: ${numbersToDraw}`);
-  // console.log(numbersToDraw);
   var boards = data.boards;
   var someoneHasWon = false;
   var winningBoard = null;
@@ -75,7 +72,6 @@ function solvePart1(data) {
       console.log("No winner");
       return;
     }
-    // console.log(`Number: ${number}`);
     boards = boards.map((b) => markBoard(b, number));
     boards.forEach((board) => {
       var winner = checkBoard(board);
@@ -93,7 +89,7 @@ function solvePart1(data) {
   console.log(`Result: ${sum * number}`);
 }
 
-function solve(data, partTwo = true) {
+function solve(data, partTwo) {
   if (!partTwo) {
     return solvePart1(data);
   }
@@ -114,7 +110,6 @@ function solve(data, partTwo = true) {
       console.log("No winner");
       return;
     }
-    // console.log(`Number: ${number}`);
     boards = boards.map((b) => markBoard(b, number));
 
     if (oneBoardLeft) {
