@@ -7,6 +7,7 @@ const solve01 = require("./01");
 const solve02 = require("./02");
 const solve03 = require("./03");
 const solve04 = require("./04");
+const solve05 = require("./05");
 
 yargs(hideBin(process.argv))
   .command(
@@ -79,5 +80,7 @@ function runDay(p, data, runSecondPart) {
       solve03(data, runSecondPart);
     case "04":
       solve04(data, runSecondPart);
+    case "05":
+      solve05(data, runSecondPart);
   }
 }
