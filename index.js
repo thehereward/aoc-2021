@@ -3,11 +3,7 @@ const { EOL } = require("os");
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 
-const solve01 = require("./01");
-const solve02 = require("./02");
-const solve03 = require("./03");
-const solve04 = require("./04");
-const solve05 = require("./05");
+const solve = require("./solve");
 
 yargs(hideBin(process.argv))
   .command(
@@ -32,7 +28,7 @@ yargs(hideBin(process.argv))
       } catch (err) {
         console.error(err);
       }
-      runDay(puzzleNumber, data, runSecondPart);
+      solve(puzzleNumber, data, runSecondPart);
     }
   )
   .option("verbose", {
@@ -52,35 +48,3 @@ yargs(hideBin(process.argv))
     default: false,
   })
   .parse();
-
-// console.log(argv);
-
-// let puzzleNumber = process.argv[2];
-
-// console.log("Advent of Code 2021");
-// console.log(`Puzzle Number: ${puzzleNumber}`);
-
-// let data = "";
-// try {
-//   data = fs.readFileSync(`./inputs/${puzzleNumber}`, "utf8");
-//   data = data.split(EOL);
-// } catch (err) {
-//   console.error(err);
-// }
-
-// console.log("Data loaded");
-
-function runDay(p, data, runSecondPart) {
-  switch (p) {
-    case "01":
-      solve01(data, runSecondPart);
-    case "02":
-      solve02(data, runSecondPart);
-    case "03":
-      solve03(data, runSecondPart);
-    case "04":
-      solve04(data, runSecondPart);
-    case "05":
-      solve05(data, runSecondPart);
-  }
-}
