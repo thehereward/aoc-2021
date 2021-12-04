@@ -4,6 +4,7 @@ const { EOL } = require("os");
 const solve01 = require("./01");
 const solve02 = require("./02");
 const solve03 = require("./03");
+const solve04 = require("./04");
 
 let puzzleNumber = process.argv[2];
 
@@ -27,4 +28,6 @@ switch (puzzleNumber) {
     solve02(data);
   case "03":
     solve03(data);
+  case "04":
+    solve04(data);
 }
