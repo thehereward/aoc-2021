@@ -1,33 +1,89 @@
 function parseData(data) {
-  const numbersDrawn = data.shift();
-
-  var boards = [];
-  var boardIndex = -1;
-  data.forEach((row) => {
-    if (row.length == 0) {
-      boards.push([]);
-      boardIndex = boardIndex + 1;
-    } else {
-      const regex = /\s+/;
-      boards[boardIndex].push(row.trim().split(regex));
-    }
+  const newData = data.map((d) => {
+    return d.split(" -> ");
   });
 
-  boards = boards.map((board) => {
+  const pairs = newData.map((d) => {
     return {
-      rows: board,
-      cols: transpose(board),
+      start: d[0]
+        .split(",")
+        .map((n) => parseInt(n))
+        .reduce((a, c) => {
+          return { x: a, y: c };
+        }),
+      end: d[1]
+        .split(",")
+        .map((n) => parseInt(n))
+        .reduce((a, c) => {
+          return { x: a, y: c };
+        }),
     };
   });
+  return pairs;
+}
 
-  return { numbersDrawn, boards };
+function addVectors(data, excludeDiagonals = true) {
+  const vectors = data.map((pair) => {
+    var x = pair.end.x - pair.start.x;
+    var y = pair.end.y - pair.start.y;
+
+    if (excludeDiagonals & (x != 0) && y != 0) {
+      // A diagonal line
+      return;
+    }
+
+    var mag = Math.max(Math.abs(x), Math.abs(y));
+
+    return {
+      ...pair,
+      vector: {
+        x: x / mag,
+        y: y / mag,
+      },
+    };
+  });
+  return vectors.filter((x) => !!x);
+}
+
+function mapToGrid(data) {
+  const grid = {};
+
+  data.forEach((vector) => {
+    var point = vector.start;
+
+    while (point.x != vector.end.x || point.y != vector.end.y) {
+      grid[`${point.x},${point.y}`] = grid[`${point.x},${point.y}`] + 1 || 1;
+      point.x = point.x + vector.vector.x;
+      point.y = point.y + vector.vector.y;
+    }
+    grid[`${point.x},${point.y}`] = grid[`${point.x},${point.y}`] + 1 || 1;
+  });
+  return grid;
+}
+
+function sumGrid(grid) {
+  return Object.keys(grid).reduce((a, c) => {
+    return grid[c] > 1 ? a + 1 : a;
+  }, 0);
 }
 
 function solvePart1(data) {
+  const linePairs = parseData(data);
+  const vectors = addVectors(linePairs);
+  const grid = mapToGrid(vectors);
+  const sum = sumGrid(grid);
+
+  console.log(sum);
   console.log("Solving Part 1");
 }
 
 function solvePart2(data) {
+  const linePairs = parseData(data);
+  const vectors = addVectors(linePairs, false);
+  const grid = mapToGrid(vectors);
+  const sum = sumGrid(grid);
+
+  console.log(sum);
   console.log("Solving Part 2");
 }
 

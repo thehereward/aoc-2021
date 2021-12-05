@@ -3,7 +3,7 @@ const solve02 = require("./02");
 const solve03 = require("./03");
 const solve04 = require("./04");
 const solve05 = require("./05");
-// const solve06 = require("./06");
+const solve06 = require("./06");
 // const solve07 = require("./07");
 // const solve08 = require("./08");
 // const solve09 = require("./09");
@@ -36,8 +36,8 @@ function runDay(p, data, runSecondPart) {
       solve04(data, runSecondPart);
     case "05":
       solve05(data, runSecondPart);
-    // case "06":
-    //   solve06(data, runSecondPart);
+    case "06":
+      solve06(data, runSecondPart);
     // case "07":
     //   solve07(data, runSecondPart);
     // case "08":
