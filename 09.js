@@ -95,48 +95,85 @@ function findBasin(data, lowPoint) {
 //   }
 // }
 
-function markBasins(data) {
+function padData(data) {
   const width = data[0].length;
   const height = data.length;
   data = data.map((d) => [9].concat(d).concat(9));
   const filler = new Array(width + 2).fill(9);
   data = [filler].concat(data).concat([filler]);
+  return data;
+}
 
+function markBasins(data, lowPoints) {
   var basinCount = 1;
-  var currentBasin = "";
 
-  for (j = 1; j <= height; j = j + 1) {
-    for (i = 1; i <= width; i = i + 1) {
-      const value = data[j][i];
-      if (value >= 9) {
-        continue;
+  lowPoints.forEach((lowPoint) => {
+    // console.log({ lowPoint });
+    var currentBasin = basinCount.toString();
+    data[lowPoint.y][lowPoint.x] = currentBasin;
+    var j = lowPoint.y;
+    var i = lowPoint.x;
+    data[j - 1][i] = data[j - 1][i] >= 9 ? 9 : currentBasin;
+    data[j + 1][i] = data[j + 1][i] >= 9 ? 9 : currentBasin;
+    data[j][i - 1] = data[j][i - 1] >= 9 ? 9 : currentBasin;
+    data[j][i + 1] = data[j][i + 1] >= 9 ? 9 : currentBasin;
+    basinCount = basinCount + 1;
+  });
+
+  return data;
+}
+
+function expandPoint(data, j, i, value) {}
+
+function expandBasins(data) {
+  // console.log("Expanding...");
+  var madeAChange = true;
+  const width = data[0].length;
+  const height = data.length;
+
+  // console.log({ data });
+  while (madeAChange) {
+    madeAChange = false;
+    for (var j = 1; j < height - 1; j = j + 1) {
+      for (var i = 1; i < width - 1; i = i + 1) {
+        const value = data[j][i];
+        if (typeof value != "string" && value >= 9) {
+          continue;
+        }
+
+        const above = data[j - 1][i];
+        const below = data[j + 1][i];
+        const left = data[j][i - 1];
+        const right = data[j][i + 1];
+        const points = [above, below, left, right];
+        // prettyPrint(data, j, i);
+        if (points.some((v) => typeof v != "string" && v < 9)) {
+          data[j - 1][i] = data[j - 1][i] >= 9 ? 9 : value;
+          data[j + 1][i] = data[j + 1][i] >= 9 ? 9 : value;
+          data[j][i - 1] = data[j][i - 1] >= 9 ? 9 : value;
+          data[j][i + 1] = data[j][i + 1] >= 9 ? 9 : value;
+          madeAChange = true;
+        }
+        // prettyPrint(data, j, i);
+
+        // const basin = points.filter((a) => typeof a == "string");
+        // if (basin.length > 0) {
+        //   currentBasin = basin[0];
+        //   data[j][i] = currentBasin;
+        // } else {
+        //   currentBasin = `${basinCount}`;
+        //   data[j][i] = currentBasin;
+        //   basinCount = basinCount + 1;
+        // }
       }
-
-      const above = data[j - 1][i];
-      const below = data[j + 1][i];
-      const left = data[j][i - 1];
-      const right = data[j][i + 1];
-      const points = [value, above, below, left, right];
-
-      const basin = points.filter((a) => typeof a == "string");
-      if (basin.length > 0) {
-        currentBasin = basin[0];
-        data[j][i] = currentBasin;
-      } else {
-        currentBasin = `${basinCount}`;
-        data[j][i] = currentBasin;
-        basinCount = basinCount + 1;
-      }
-
-      data[j - 1][i] = data[j - 1][i] >= 9 ? 9 : currentBasin;
-      data[j + 1][i] = data[j + 1][i] >= 9 ? 9 : currentBasin;
-      data[j][i - 1] = data[j][i - 1] >= 9 ? 9 : currentBasin;
-      data[j][i + 1] = data[j][i + 1] >= 9 ? 9 : currentBasin;
     }
   }
-  // console.log({ data });
-  console.log(`There are ${basinCount} basins.`);
-  return { data, basinCount };
+  return data;
+  // if (madeAChange) {
+  //   return expandBasins(data);
+  // } else {
+  //   return data;
+  // }
 }
 
 function dataCheck(data) {
@@ -144,11 +181,11 @@ function dataCheck(data) {
   var thereWereContiguousSets = false;
   const width = data[0].length;
   const height = data.length;
-  for (j = 1; j < height - 1; j = j + 1) {
-    for (i = 1; i < width - 1; i = i + 1) {
+  for (var j = 1; j < height - 1; j = j + 1) {
+    for (var i = 1; i < width - 1; i = i + 1) {
       const value = data[j][i];
       if (typeof value != "string" && value < 9) {
-        console.log("We have a problem.");
+        console.log(`We have a problem: ${value}  at ${i} ${j}`);
       }
       if (typeof value != "string" && value >= 9) {
         continue;
@@ -232,13 +269,20 @@ function prettyPrint(data, j, i) {
   lines.forEach((line) => {
     console.log(line.join(" "));
   });
+  console.log("");
+  console.log("# # #");
+  console.log("");
 }
 
 function solvePart2(data) {
   console.log("Solving Part 2");
   var data = parseData(data);
   const lowPoints = getLowPoints(data);
-  var { data, basinCount } = markBasins(data);
+  data = padData(data);
+  var data = markBasins(data, lowPoints);
+  data = expandBasins(data);
+  // console.log(data);
+  process.exit();
 
   dataCheck(data);
   var counts = {};
@@ -256,6 +300,9 @@ function solvePart2(data) {
   Object.keys(counts).forEach((key) => {
     return results.push(counts[key]);
   });
+
+  console.log(`There were ${lowPoints.length} low points`);
+  console.log(`There were ${results.length} results`);
   results.sort((a, b) => b.value - a.value);
   const answer = results[0].value * results[1].value * results[2].value;
   console.log({ answer });
