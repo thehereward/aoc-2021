@@ -1,5 +1,6 @@
 function parseData(data) {
-  data = data.map((d) => d.split("|"));
+  data = data.map((d) => d.split("").map((char) => parseInt(char)));
+  return data;
   data = data.map((d) => {
     return {
       signalPatterns: d[0]
@@ -15,186 +16,266 @@ function parseData(data) {
   return data;
 }
 
-function findFuelUse(data, x) {
-  const fuelUse = data.reduce((a, c) => {
-    return a + Math.abs(c - x);
-  }, 0);
-  return fuelUse;
-}
-
-function getFuelForSteps(value) {
-  var abs = Math.abs(value);
-  return (abs / 2) * (abs + 1) * (abs / value) || 0;
-}
-
-function findFuelUseSecondPart(data, x) {
-  const fuelUse = data.reduce((a, c) => {
-    var steps = Math.abs(c - x);
-    return a + getFuelForSteps(steps);
-  }, 0);
-  return fuelUse;
-}
-
 function solvePart1(data) {
   console.log("Solving Part 1");
   var data = parseData(data);
-  const uniqueLengths = [2, 4, 3, 7];
-  var outputValues = data.map((d) => d.outputValues).flat();
-  const count = outputValues.reduce((a, c) => {
-    if (uniqueLengths.some((u) => u == c.length)) {
-      return a + 1;
-    } else {
-      return a;
+  const width = data[0].length;
+  const height = data.length;
+  data = data.map((d) => [10].concat(d).concat(10));
+  const filler = new Array(width + 2).fill(10);
+  data = [filler].concat(data).concat([filler]);
+
+  // console.log({ data });
+  const lowPoints = [];
+  for (i = 1; i <= width; i = i + 1) {
+    for (j = 1; j <= height; j = j + 1) {
+      // console.log({ i, j });
+      // console.log(data[j]);
+      const value = data[j][i];
+      const above = data[j - 1][i];
+      const below = data[j + 1][i];
+      const left = data[j][i - 1];
+      const right = data[j][i + 1];
+      // console.log({ value });
+      if (value < above && value < below && value < left && value < right) {
+        lowPoints.push(value);
+      }
     }
-  }, 0);
-  console.log({ count });
+  }
+  console.log({ lowPoints });
+  const answer = lowPoints.reduce((a, c) => a + c + 1, 0);
+  console.log({ answer });
+  return;
 }
 
-const LETTERS = ["a", "b", "c", "d", "e", "f", "g"];
-const mapBase = {
-  a: ["a", "b", "c", "d", "e", "f", "g"],
-  b: ["a", "b", "c", "d", "e", "f", "g"],
-  c: ["a", "b", "c", "d", "e", "f", "g"],
-  d: ["a", "b", "c", "d", "e", "f", "g"],
-  e: ["a", "b", "c", "d", "e", "f", "g"],
-  f: ["a", "b", "c", "d", "e", "f", "g"],
-  g: ["a", "b", "c", "d", "e", "f", "g"],
-};
-
-function intersection(data, filter) {
-  return data.filter((v) => filter.includes(v));
+function getLowPoints(data) {
+  const width = data[0].length;
+  const height = data.length;
+  data = data.map((d) => [10].concat(d).concat(10));
+  const filler = new Array(width + 2).fill(10);
+  data = [filler].concat(data).concat([filler]);
+  // console.log({ data });
+  const lowPoints = [];
+  for (i = 1; i <= width; i = i + 1) {
+    for (j = 1; j <= height; j = j + 1) {
+      // console.log({ i, j });
+      // console.log(data[j]);
+      const value = data[j][i];
+      const above = data[j - 1][i];
+      const below = data[j + 1][i];
+      const left = data[j][i - 1];
+      const right = data[j][i + 1];
+      // console.log({ value });
+      if (value < above && value < below && value < left && value < right) {
+        lowPoints.push({
+          x: i,
+          y: j,
+          value,
+        });
+      }
+    }
+  }
+  return lowPoints;
 }
 
-function filter(mapping, pattern, filter) {
-  pattern.split("").map((char) => {
-    mapping[char] = intersection(mapping[char], filter);
+function findBasin(data, lowPoint) {
+  const { x, y } = lowPoint;
+  console.log({ x, y });
+
+  console.log({ data });
+}
+
+// function markBasins(data) {
+//   var basinCounter = 0;
+//   for (var i = 0; i < data[0].length; i = i + 1) {
+//   for (var j = 0; j < data.length; j = j + 1) {
+//     const value = data[j][i]
+//       if ()
+//     }
+//   }
+// }
+
+function markBasins(data) {
+  const width = data[0].length;
+  const height = data.length;
+  data = data.map((d) => [9].concat(d).concat(9));
+  const filler = new Array(width + 2).fill(9);
+  data = [filler].concat(data).concat([filler]);
+
+  var basinCount = 1;
+  var currentBasin = "";
+
+  for (j = 1; j <= height; j = j + 1) {
+    for (i = 1; i <= width; i = i + 1) {
+      const value = data[j][i];
+      if (value >= 9) {
+        continue;
+      }
+
+      const above = data[j - 1][i];
+      const below = data[j + 1][i];
+      const left = data[j][i - 1];
+      const right = data[j][i + 1];
+      const points = [value, above, below, left, right];
+
+      const basin = points.filter((a) => typeof a == "string");
+      if (basin.length > 0) {
+        currentBasin = basin[0];
+        data[j][i] = currentBasin;
+      } else {
+        currentBasin = `${basinCount}`;
+        data[j][i] = currentBasin;
+        basinCount = basinCount + 1;
+      }
+
+      data[j - 1][i] = data[j - 1][i] >= 9 ? 9 : currentBasin;
+      data[j + 1][i] = data[j + 1][i] >= 9 ? 9 : currentBasin;
+      data[j][i - 1] = data[j][i - 1] >= 9 ? 9 : currentBasin;
+      data[j][i + 1] = data[j][i + 1] >= 9 ? 9 : currentBasin;
+    }
+  }
+  // console.log({ data });
+  console.log(`There are ${basinCount} basins.`);
+  return { data, basinCount };
+}
+
+function dataCheck(data) {
+  console.log("Running Contiguous Sets Check");
+  var thereWereContiguousSets = false;
+  const width = data[0].length;
+  const height = data.length;
+  for (j = 1; j < height - 1; j = j + 1) {
+    for (i = 1; i < width - 1; i = i + 1) {
+      const value = data[j][i];
+      if (typeof value != "string" && value < 9) {
+        console.log("We have a problem.");
+      }
+      if (typeof value != "string" && value >= 9) {
+        continue;
+      }
+
+      const above = data[j - 1][i];
+      const below = data[j + 1][i];
+      const left = data[j][i - 1];
+      const right = data[j][i + 1];
+      const points = [value, above, below, left, right];
+
+      const basin = points.filter((a) => typeof a == "string");
+
+      const basinSet = new Set(basin);
+      if (basinSet.size > 1) {
+        const contiguous = [];
+        basinSet.forEach((b) => contiguous.push(b));
+        console.log(`There are contiguous basins: ${contiguous.join(",")}`);
+        thereWereContiguousSets = true;
+        const mainSet = contiguous.shift();
+        // console.log(`Main Basin: ${mainSet}`);
+        // console.log({ contiguous });
+
+        // const before = countBasins(data);
+        prettyPrint(data, j, i);
+        console.log("****");
+        for (var y = 1; y < height - 1; y = y + 1) {
+          for (var x = 1; x < width - 1; x = x + 1) {
+            const value = data[y][x];
+            if (contiguous.includes(value)) {
+              data[y][x] = mainSet;
+            }
+          }
+        }
+        // const after = countBasins(data);
+        prettyPrint(data, j, i);
+        // console.log(`Before: ${before} and After: ${after}`);
+        // process.exit();
+      }
+    }
+  }
+  if (thereWereContiguousSets) {
+    return dataCheck(data);
+  } else {
+    return data;
+  }
+}
+
+function countBasins(data) {
+  var counts = {};
+  data.forEach((col) => {
+    col.forEach((char) => {
+      if (typeof char == "string") {
+        counts[char] = !counts[char]
+          ? { basin: char, value: 1 }
+          : { basin: char, value: counts[char].value + 1 };
+      }
+    });
   });
-  return mapping;
+
+  const results = [];
+  Object.keys(counts).forEach((key) => {
+    return results.push(counts[key]);
+  });
+  return results.length;
+}
+
+function prettyPrint(data, j, i) {
+  const lines = [];
+  var count = 0;
+  for (var y = j - 1; y <= j + 1; y = y + 1) {
+    for (var x = i - 1; x <= i + 1; x = x + 1) {
+      if (!lines[count]) {
+        lines[count] = [];
+      }
+      lines[count].push(data[y][x]);
+    }
+    count = count + 1;
+  }
+
+  lines.forEach((line) => {
+    console.log(line.join(" "));
+  });
 }
 
 function solvePart2(data) {
   console.log("Solving Part 2");
-  data = parseData(data);
-  const answer = data.map((d) => solveForOne(d)).reduce((a, c) => a + c);
-  console.log({ answer });
-}
+  var data = parseData(data);
+  const lowPoints = getLowPoints(data);
+  var { data, basinCount } = markBasins(data);
 
-function solveForOne(data0) {
-  var signalPatterns = data0.signalPatterns;
-  var outputValues = data0.outputValues;
-  signalPatterns = signalPatterns.sort((a, b) => a.length - b.length);
-
-  var mapping = Object.assign({}, mapBase);
-  // console.log({ mapping });
-  var uniqueSignals = {};
-  signalPatterns.forEach((pattern) => {
-    switch (pattern.length) {
-      case 2:
-        // Number 1
-        uniqueSignals[1] = pattern;
-        // console.log("Solving 1");
-        mapping = filter(mapping, pattern, ["c", "f"]);
-        LETTERS.filter((l) => !pattern.split("").includes(l)).map((char) => {
-          mapping[char] = mapping[char].filter((m) => !["c", "f"].includes(m));
-        });
-        // console.log({ mapping });
-        break;
-      case 3:
-        // Number 7
-        uniqueSignals[7] = pattern;
-        // console.log("Solving 7");
-        mapping = filter(mapping, pattern, ["a", "c", "f"]);
-        const characterA = uniqueSignals[7]
-          .split("")
-          .filter((u) => !uniqueSignals[1].split("").includes(u));
-        LETTERS.filter((l) => l != characterA).map((char) => {
-          mapping[char] = mapping[char].filter((m) => !["a"].includes(m));
-        });
-        // console.log({ mapping });
-
-        break;
-      case 4:
-        // Number 4
-        uniqueSignals[4] = pattern;
-        // console.log("Solving 4");
-        mapping = filter(mapping, pattern, ["b", "c", "d", "f"]);
-        LETTERS.filter((l) => !pattern.split("").includes(l)).map((char) => {
-          mapping[char] = mapping[char].filter(
-            (m) => !["b", "c", "d", "f"].includes(m)
-          );
-        });
-        break;
-    }
-  });
-
-  const charCount = signalPatterns.reduce((a, c) => {
-    c.split("").map((char) => {
-      a[char] = !a[char] ? 1 : a[char] + 1;
+  dataCheck(data);
+  var counts = {};
+  data.forEach((col) => {
+    col.forEach((char) => {
+      if (typeof char == "string") {
+        counts[char] = !counts[char]
+          ? { basin: char, value: 1 }
+          : { basin: char, value: counts[char].value + 1 };
+      }
     });
-    return a;
-  }, {});
-
-  LETTERS.forEach((letter) => {
-    switch (charCount[letter]) {
-      case 4:
-        // e
-        filter(mapping, letter, "e");
-        LETTERS.filter((l) => l != letter).map((char) => {
-          mapping[char] = mapping[char].filter((m) => !["e"].includes(m));
-        });
-        break;
-      case 6:
-        // f
-        filter(mapping, letter, "b");
-        LETTERS.filter((l) => l != letter).map((char) => {
-          mapping[char] = mapping[char].filter((m) => !["b"].includes(m));
-        });
-        break;
-      case 9:
-        // e
-        filter(mapping, letter, "f");
-        LETTERS.filter((l) => l != letter).map((char) => {
-          mapping[char] = mapping[char].filter((m) => !["f"].includes(m));
-        });
-        break;
-    }
   });
 
-  outputValues = mapOutputs(mapping, outputValues);
-  outputValues = parseInt(
-    outputValues.map((value) => MAPPINGS[value]).join("")
-  );
-  return outputValues;
-}
+  const results = [];
+  Object.keys(counts).forEach((key) => {
+    return results.push(counts[key]);
+  });
+  results.sort((a, b) => b.value - a.value);
+  const answer = results[0].value * results[1].value * results[2].value;
+  console.log({ answer });
+  // findBasin(data, lowPoints[0]);
 
-function mapOutputs(mapping, outputs) {
-  return outputs.map((output) =>
-    output
-      .split("")
-      .map((char) => mapping[char])
-      .sort()
-      .join("")
-  );
+  // console.log({ lowPoints });
+  // const answer = lowPoints.reduce((a, c) => a + c.value + 1, 0);
+  // console.log({ answer });
+  return;
 }
-
-const MAPPINGS = {
-  abcefg: "0",
-  cf: "1",
-  acdeg: "2",
-  acdfg: "3",
-  bcdf: "4",
-  abdfg: "5",
-  abdefg: "6",
-  acf: "7",
-  abcdefg: "8",
-  abcdfg: "9",
-};
 
 function solve(data, partTwo) {
   if (!partTwo) {
     return solvePart1(data);
   } else {
     return solvePart2(data);
+    //  63756 is too low
+    //  71484 is too low
+    // 120408 is too low
+    //  65688 is too low
   }
 }
 
