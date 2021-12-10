@@ -28,7 +28,7 @@ yargs(hideBin(process.argv))
       } catch (err) {
         console.error(err);
       }
-      solve(puzzleNumber, data, runSecondPart);
+      solve(puzzleNumber.toString(), data, runSecondPart);
     }
   )
   .option("verbose", {

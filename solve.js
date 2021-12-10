@@ -8,7 +8,7 @@ const solve07 = require("./07");
 const solve08 = require("./08");
 const solve09 = require("./09");
 const solve10 = require("./10");
-// const solve11 = require("./11");
+const solve11 = require("./11");
 // const solve12 = require("./12");
 // const solve13 = require("./13");
 // const solve14 = require("./14");
@@ -25,6 +25,8 @@ const solve10 = require("./10");
 // const solve25 = require("./25");
 
 function runDay(p, data, runSecondPart) {
+  console.log({ p });
+
   switch (p) {
     case "01":
       solve01(data, runSecondPart);
@@ -46,8 +48,8 @@ function runDay(p, data, runSecondPart) {
       solve09(data, runSecondPart);
     case "10":
       solve10(data, runSecondPart);
-    // case "11":
-    //   solve11(data, runSecondPart);
+    case "11":
+      solve11(data, runSecondPart);
     // case "12":
     //   solve12(data, runSecondPart);
     // case "13":
