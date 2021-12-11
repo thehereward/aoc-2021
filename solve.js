@@ -25,8 +25,6 @@ const solve11 = require("./11");
 // const solve25 = require("./25");
 
 function runDay(p, data, runSecondPart) {
-  console.log({ p });
-
   switch (p) {
     case "01":
       solve01(data, runSecondPart);
