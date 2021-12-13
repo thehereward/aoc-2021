@@ -11,7 +11,7 @@ const solve10 = require("./10");
 const solve11 = require("./11");
 const solve12 = require("./12");
 const solve13 = require("./13");
-// const solve14 = require("./14");
+const solve14 = require("./14");
 // const solve15 = require("./15");
 // const solve16 = require("./16");
 // const solve17 = require("./17");
@@ -52,8 +52,8 @@ function runDay(p, data, runSecondPart) {
       solve12(data, runSecondPart);
     case "13":
       solve13(data, runSecondPart);
-    // case "14":
-    //   solve14(data, runSecondPart);
+    case "14":
+      solve14(data, runSecondPart);
     // case "15":
     //   solve15(data, runSecondPart);
     // case "16":
