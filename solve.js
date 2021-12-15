@@ -12,8 +12,8 @@ const solve11 = require("./11");
 const solve12 = require("./12");
 const solve13 = require("./13");
 const solve14 = require("./14");
-// const solve15 = require("./15");
-// const solve16 = require("./16");
+const solve15 = require("./15");
+const solve16 = require("./16");
 // const solve17 = require("./17");
 // const solve18 = require("./18");
 // const solve19 = require("./19");
@@ -28,54 +28,79 @@ function runDay(p, data, runSecondPart) {
   switch (p) {
     case "01":
       solve01(data, runSecondPart);
+      break;
     case "02":
       solve02(data, runSecondPart);
+      break;
     case "03":
       solve03(data, runSecondPart);
+      break;
     case "04":
       solve04(data, runSecondPart);
+      break;
     case "05":
       solve05(data, runSecondPart);
+      break;
     case "06":
       solve06(data, runSecondPart);
+      break;
     case "07":
       solve07(data, runSecondPart);
+      break;
     case "08":
       solve08(data, runSecondPart);
+      break;
     case "09":
       solve09(data, runSecondPart);
+      break;
     case "10":
       solve10(data, runSecondPart);
+      break;
     case "11":
       solve11(data, runSecondPart);
+      break;
     case "12":
       solve12(data, runSecondPart);
+      break;
     case "13":
       solve13(data, runSecondPart);
+      break;
     case "14":
       solve14(data, runSecondPart);
-    // case "15":
-    //   solve15(data, runSecondPart);
-    // case "16":
-    //   solve16(data, runSecondPart);
+      break;
+    case "15":
+      solve15(data, runSecondPart);
+      break;
+    case "16":
+      solve16(data, runSecondPart);
+      break;
     // case "17":
     //   solve17(data, runSecondPart);
+    //   break;
     // case "18":
-    //   solve19(data, runSecondPart);
+    //   solve18(data, runSecondPart);
+    //   break;
     // case "19":
     //   solve19(data, runSecondPart);
+    //   break;
     // case "20":
     //   solve20(data, runSecondPart);
+    //   break;
     // case "21":
     //   solve21(data, runSecondPart);
+    //   break;
     // case "22":
     //   solve22(data, runSecondPart);
+    //   break;
     // case "23":
     //   solve23(data, runSecondPart);
+    //   break;
     // case "24":
     //   solve24(data, runSecondPart);
+    //   break;
     // case "25":
     //   solve25(data, runSecondPart);
+    //   break;
   }
 }
 
