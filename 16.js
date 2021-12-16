@@ -5,19 +5,9 @@ function parseData(data) {
   return data;
 }
 
-// Type IDs
-// 4: Literal Value
-// Anything else: operator
-
-// 11101110000000001101010000001100100000100011000001100000
-// 11101110000000001101010000001100100000100011000001100000
-
 function parseOperator(data) {
-  // console.log({ data });
   var lengthType = parseInt(data.slice(0, 1), 2);
   data = data.slice(1);
-  // console.log({ lengthType });
-  // console.log({ data });
 
   var numberOfBits = lengthType == 1 ? 11 : 15;
   var subPacketLength = parseInt(data.slice(0, numberOfBits), 2);
@@ -46,29 +36,24 @@ function parseOperator(data) {
 }
 
 function parseLiteral(data) {
-  var isLast = false;
   var number = [];
   do {
     var bitIndicator = data.slice(0, 1);
     var nextNumber = data.slice(1, 5);
     number.push(nextNumber);
     data = data.slice(5);
-    isLast = bitIndicator == "0";
-  } while (!isLast);
+  } while (bitIndicator == "1");
   number = parseInt(number.join(""), 2);
-  // console.log({ number });
   return { number, data };
 }
 
 function parsePacket(data) {
-  // console.log({ data });
   var version = parseInt(data.slice(0, 3), 2);
   data = data.slice(3);
   var typeId = parseInt(data.slice(0, 3), 2);
   data = data.slice(3);
-  // console.log({ version, typeId });
 
-  var type = ";";
+  var type = "";
   if (typeId == 4) {
     var litResult = parseLiteral(data);
     var number = litResult.number;
@@ -89,27 +74,22 @@ function parsePacket(data) {
     subPackets,
   };
 
-  // console.log({ packet });
   return { packet, data };
 }
 
 function addVersions(packet, sum) {
-  // console.log({ packet });
   if (packet.subPackets == undefined) {
-    // console.log(packet.version);
     return packet.version + sum;
   } else {
     var subPacketVersions = packet.subPackets.map((subPacket) => {
       return addVersions(subPacket, 0);
     });
-    // console.log({ subPacketVersions });
     var sumOfSubPackets = subPacketVersions.reduce((a, c) => a + c);
     return sumOfSubPackets + sum + packet.version;
   }
 }
 
 function evaluatePacket(packet) {
-  // console.log({ packet });
   switch (packet.typeId) {
     case 0:
       return packet.subPackets.reduce((a, c) => a + evaluatePacket(c), 0);
@@ -142,10 +122,6 @@ function evaluatePacket(packet) {
       var packetA = packet.subPackets[0];
       var packetB = packet.subPackets[1];
       return evaluatePacket(packetA) == evaluatePacket(packetB) ? 1 : 0;
-      break;
-    case 8:
-      break;
-    case 9:
       break;
   }
 }
