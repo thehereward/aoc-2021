@@ -20,6 +20,7 @@ yargs(hideBin(process.argv))
       const runSecondPart = argv.secondPart;
       if (argv.verbose) console.info(`Running Part: ${runSecondPart ? 2 : 1}`);
       const useTestData = argv.useTestData;
+      const timeRun = argv.timeRun;
       const fileName = `./inputs/${puzzleNumber}${useTestData ? "_test" : ""}`;
       let data = "";
       try {
@@ -28,7 +29,7 @@ yargs(hideBin(process.argv))
       } catch (err) {
         console.error(err);
       }
-      solve(puzzleNumber.toString(), data, runSecondPart);
+      solve(puzzleNumber.toString(), data, runSecondPart, timeRun);
     }
   )
   .option("verbose", {
@@ -45,6 +46,10 @@ yargs(hideBin(process.argv))
     alias: "s",
     type: "boolean",
     description: "Run second part",
+    default: false,
+  })
+  .option("time-run", {
+    type: "boolean",
     default: false,
   })
   .parse();

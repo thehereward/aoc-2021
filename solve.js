@@ -24,7 +24,8 @@ const solve16 = require("./16");
 // const solve24 = require("./24");
 // const solve25 = require("./25");
 
-function runDay(p, data, runSecondPart) {
+function runDay(p, data, runSecondPart, timeRun) {
+  const startTime = Date.now();
   switch (p) {
     case "01":
       solve01(data, runSecondPart);
@@ -101,6 +102,12 @@ function runDay(p, data, runSecondPart) {
     // case "25":
     //   solve25(data, runSecondPart);
     //   break;
+  }
+  const endTime = Date.now();
+  if (timeRun) {
+    const duration = endTime - startTime;
+    // console.log({ duration });
+    console.log(`Elapsed time: ${duration.toString()}ms`);
   }
 }
 

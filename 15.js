@@ -14,10 +14,7 @@ function setRisk(riskMap, data, risk, j, i) {
   var somethingChanged = false;
   const existingRisk = riskMap[j][i];
   const newRisk = risk + data[j][i];
-  if (existingRisk == undefined) {
-    riskMap[j][i] = newRisk;
-    somethingChanged = true;
-  } else if (newRisk < existingRisk) {
+  if (existingRisk == undefined || newRisk < existingRisk) {
     riskMap[j][i] = newRisk;
     somethingChanged = true;
   }
@@ -25,18 +22,17 @@ function setRisk(riskMap, data, risk, j, i) {
 }
 
 function expandData(data) {
-  var height = data.length * 5;
-  var width = data[0].length * 5;
-  var newData = initialise2DArray(width, height);
+  var height = data.length;
+  var width = data[0].length;
+  var newData = initialise2DArray(width * 5, height * 5);
 
-  for (var j = 0; j < data.length; j = j + 1) {
-    for (var i = 0; i < data[0].length; i = i + 1) {
+  for (var j = 0; j < height; j = j + 1) {
+    for (var i = 0; i < width; i = i + 1) {
       for (var jx = 0; jx < 5; jx = jx + 1) {
         for (var ix = 0; ix < 5; ix = ix + 1) {
           var existingValue = data[j][i] + ix + jx;
           existingValue = existingValue > 9 ? existingValue - 9 : existingValue;
-          newData[j + jx * data.length][i + ix * data[0].length] =
-            existingValue;
+          newData[j + jx * height][i + ix * width] = existingValue;
         }
       }
     }
@@ -45,33 +41,42 @@ function expandData(data) {
 }
 
 function updateRisk(riskMap, data, height, width) {
-  var somethingChanged = false;
+  var thereWasChange = false;
   for (var j = 0; j < height; j = j + 1) {
     for (var i = 0; i < width; i = i + 1) {
-      const risk = riskMap[j][i];
-      if (i > 0) {
-        somethingChanged =
-          setRisk(riskMap, data, risk, j, i - 1) || somethingChanged;
-      }
-      if (i < width - 1) {
-        somethingChanged =
-          setRisk(riskMap, data, risk, j, i + 1) || somethingChanged;
-      }
-      if (j > 0) {
-        somethingChanged =
-          setRisk(riskMap, data, risk, j - 1, i) || somethingChanged;
-      }
-      if (j < height - 1) {
-        somethingChanged =
-          setRisk(riskMap, data, risk, j + 1, i) || somethingChanged;
-      }
+      thereWasChange = updateRiskForNeighbouringCells(
+        riskMap,
+        j,
+        i,
+        data,
+        width,
+        height
+      );
     }
   }
-  if (somethingChanged) {
+  if (thereWasChange) {
     return updateRisk(riskMap, data, height, width);
   } else {
     return riskMap;
   }
+}
+
+function updateRiskForNeighbouringCells(riskMap, j, i, data, width, height) {
+  var thereWasChange = false;
+  const risk = riskMap[j][i];
+  if (i > 0) {
+    thereWasChange = setRisk(riskMap, data, risk, j, i - 1) || thereWasChange;
+  }
+  if (i < width - 1) {
+    thereWasChange = setRisk(riskMap, data, risk, j, i + 1) || thereWasChange;
+  }
+  if (j > 0) {
+    thereWasChange = setRisk(riskMap, data, risk, j - 1, i) || thereWasChange;
+  }
+  if (j < height - 1) {
+    thereWasChange = setRisk(riskMap, data, risk, j + 1, i) || thereWasChange;
+  }
+  return thereWasChange;
 }
 
 function findSmallestPath(data) {
