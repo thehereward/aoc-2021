@@ -14,8 +14,8 @@ const solve13 = require("./13");
 const solve14 = require("./14");
 const solve15 = require("./15");
 const solve16 = require("./16");
-// const solve17 = require("./17");
-// const solve18 = require("./18");
+const solve17 = require("./17");
+const solve18 = require("./18");
 // const solve19 = require("./19");
 // const solve20 = require("./20");
 // const solve21 = require("./21");
@@ -75,12 +75,12 @@ function runDay(p, data, runSecondPart, timeRun) {
     case "16":
       solve16(data, runSecondPart);
       break;
-    // case "17":
-    //   solve17(data, runSecondPart);
-    //   break;
-    // case "18":
-    //   solve18(data, runSecondPart);
-    //   break;
+    case "17":
+      solve17(data, runSecondPart);
+      break;
+    case "18":
+      solve18(data, runSecondPart);
+      break;
     // case "19":
     //   solve19(data, runSecondPart);
     //   break;
