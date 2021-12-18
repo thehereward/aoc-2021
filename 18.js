@@ -7,65 +7,56 @@ function add(a, b) {
   return explodeOrSplit(result);
 }
 
-function explodeOrSplit(a) {
-  // console.log(JSON.stringify(a));
-  var result = explode(a);
-  var didExplode = JSON.stringify(result) != JSON.stringify(a);
-  if (didExplode) {
-    return explodeOrSplit(result);
-  }
-
-  result = split(a);
-  var didSplit = JSON.stringify(result) != JSON.stringify(a);
-  if (didSplit) {
-    return explodeOrSplit(result);
-  }
-
-  return result;
+function numberChanged(before, after) {
+  return JSON.stringify(before) != JSON.stringify(after);
 }
 
-function explodeRecursive(a, nesting, hasExploded) {
-  if (typeof a == "number") {
+function explodeOrSplit(input) {
+  var output = explode(input);
+  if (numberChanged(input, output)) {
+    return explodeOrSplit(output);
+  }
+
+  output = split(input);
+  if (numberChanged(input, output)) {
+    return explodeOrSplit(output);
+  }
+
+  return output;
+}
+
+function explodeRecursive(node, nesting, hasExploded) {
+  if (typeof node == "number") {
     return {
-      value: a,
+      value: node,
     };
   }
 
   if (nesting == 5 && !hasExploded) {
-    // Explode
-    // console.log({ a });
     return {
-      before: a[0],
-      after: a[1],
+      before: node[0],
+      after: node[1],
       value: 0,
       hasExploded: true,
     };
   }
 
-  const partA = explodeRecursive(a[0], nesting + 1, hasExploded);
+  const partA = explodeRecursive(node[0], nesting + 1, hasExploded);
   hasExploded = hasExploded || partA.hasExploded;
-  const partB = explodeRecursive(a[1], nesting + 1, hasExploded);
+  const partB = explodeRecursive(node[1], nesting + 1, hasExploded);
   hasExploded = hasExploded || partB.hasExploded;
 
-  // if (hasExploded) {
-  //   console.log({ partA, partB });
-  // }
-
   if (typeof partA.after == "number") {
-    var newValue = prepend(partA.after, partB.value);
     return {
-      value: [partA.value, newValue],
+      value: [partA.value, prepend(partA.after, partB.value)],
       before: partA.before,
       hasExploded,
     };
   }
 
   if (typeof partB.before == "number") {
-    // console.log(partB);
-    var newValue = append(partA.value, partB.before);
-    // console.log(newValue);
     return {
-      value: [newValue, partB.value],
+      value: [append(partA.value, partB.before), partB.value],
       after: partB.after,
       hasExploded,
     };
@@ -79,26 +70,25 @@ function explodeRecursive(a, nesting, hasExploded) {
   };
 }
 
-function prepend(value, data) {
-  if (typeof data == "number") {
-    return data + value;
+function prepend(value, node) {
+  if (typeof node == "number") {
+    return node + value;
   }
-  if (typeof data[0] == "number") {
-    return [data[0] + value, data[1]];
+  if (typeof node[0] == "number") {
+    return [node[0] + value, node[1]];
   } else {
-    return [prepend(value, data[0]), data[1]];
+    return [prepend(value, node[0]), node[1]];
   }
 }
 
-function append(data, value) {
-  // console.log({ data, value });
-  if (typeof data == "number") {
-    return data + value;
+function append(node, value) {
+  if (typeof node == "number") {
+    return node + value;
   }
-  if (typeof data[1] == "number") {
-    return [data[0], data[1] + value];
+  if (typeof node[1] == "number") {
+    return [node[0], node[1] + value];
   } else {
-    return [data[0], append(data[1], value)];
+    return [node[0], append(node[1], value)];
   }
 }
 
@@ -109,41 +99,32 @@ function explode(data) {
 
 function split(data) {
   data = JSON.stringify(data);
+
   const re = /(\d\d)/;
   if (re.test(data)) {
     var match = data.match(re);
-    var result = parseInt(match[1]);
-    result = JSON.stringify([Math.floor(result / 2), Math.ceil(result / 2)]);
     var before = data.slice(0, match.index);
     var after = data.slice(match.index + 2);
+    var result = parseInt(match[1]);
+    result = JSON.stringify([Math.floor(result / 2), Math.ceil(result / 2)]);
     data = `${before}${result}${after}`;
   }
 
   return JSON.parse(data);
 }
 
-function splitRecursive(data, hasSplit) {
-  if (hasSplit) {
-    return { value: data, hasSplit };
-  }
-  if (typeof data == "number") {
-    if (data > 9) {
-      data = [Math.floor(data / 2), Math.ceil(data / 2)];
-    }
-    return { value: data, hasSplit: true };
-  }
-  var a = data[0];
-  var b = data[1];
-  return {
-    value: [splitRecursive(a).value, splitRecursive(b).value],
-    hasSplit,
-  };
-}
-
 function addList(data) {
   return data.reduce((a, c) => {
     return add(a, c);
   });
+}
+
+function magnitude(data) {
+  if (typeof data == "number") {
+    return data;
+  }
+
+  return magnitude(data[0]) * 3 + magnitude(data[1]) * 2;
 }
 
 function solvePart1(data) {
@@ -157,7 +138,18 @@ function solvePart1(data) {
 function solvePart2(data) {
   console.log("Solving Part 2");
   data = parseData(data);
-  console.log({ data });
+  var sums = [];
+  for (var i = 0; i < data.length; i = i + 1) {
+    for (var j = 0; j < data.length; j = j + 1) {
+      if (i == j) {
+        continue;
+      }
+      sums.push(magnitude(add(data[i], data[j])));
+    }
+  }
+
+  sums = Math.max(...sums);
+  console.log({ sums });
 }
 
 function solve(data, partTwo) {
@@ -166,14 +158,6 @@ function solve(data, partTwo) {
   } else {
     return solvePart2(data);
   }
-}
-
-function magnitude(data) {
-  if (typeof data == "number") {
-    return data;
-  }
-
-  return magnitude(data[0]) * 3 + magnitude(data[1]) * 2;
 }
 
 module.exports = { solve, add, explode, split, addList, magnitude };

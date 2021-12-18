@@ -22,4 +22,4 @@ function solve(data, partTwo) {
   }
 }
 
-module.exports = solve;
+module.exports = { solve };
