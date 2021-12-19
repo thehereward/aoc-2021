@@ -9,12 +9,13 @@
   },
   "jest": {
     "testMatch": [
-      "**/*.test.js"
+      "**/19.test.js"
     ]
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "mathjs": "^10.0.0",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
