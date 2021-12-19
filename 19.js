@@ -202,6 +202,39 @@ function solvePart1(data) {
     }
   });
 
+  console.log({ matchingBeacons0 });
+  console.log({ matchingBeacons1 });
+
+  const diff0_01 = subtract(matchingBeacons0[1], matchingBeacons0[0]);
+  const diff1_01 = subtract(matchingBeacons1[1], matchingBeacons1[0]);
+  console.log({ diff0_01, diff1_01 });
+
+  function getMapping(aa, bb) {
+    var absbb = bb.map((char) => Math.abs(char));
+    var index = absbb.indexOf(Math.abs(aa));
+    var isInverse = bb[index] == aa * -1;
+    console.log({ index, isInverse });
+
+    return function (cc) {
+      if (isInverse) {
+        return -cc[index];
+      }
+      return cc[index];
+    };
+  }
+
+  var xMap = getMapping(diff0_01[0], diff1_01);
+  var yMap = getMapping(diff0_01[1], diff1_01);
+  var zMap = getMapping(diff0_01[2], diff1_01);
+
+  var newX = xMap(diff1_01);
+  var newY = yMap(diff1_01);
+  var newZ = zMap(diff1_01);
+  console.log({ newX, newY, newZ });
+  // const diff0_02 = subtract(matchingBeacons0[2], matchingBeacons0[0]);
+  // const diff1_02 = subtract(matchingBeacons1[2], matchingBeacons1[0]);
+  // console.log({ diff0_02, diff1_02 });
+  return;
   // var transform = getTransformation(matchingBeacons0, matchingBeacons1);
   var transform = rotateY(rotateY(identity(3)));
   console.log(transform);
