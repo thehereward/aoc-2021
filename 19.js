@@ -1,4 +1,11 @@
-const { matrix, multiply, max } = require("mathjs");
+const {
+  matrix,
+  multiply,
+  inv,
+  transpose,
+  column,
+  identity,
+} = require("mathjs");
 
 function parseData(data) {
   var scanners = [];
@@ -146,6 +153,25 @@ function countMatchingMagnitudes(a, b) {
   return count;
 }
 
+function getTransformation(matchingBeacons0, matchingBeacons1) {
+  const b00 = matchingBeacons0[0];
+  const b01 = matchingBeacons0[1];
+  const b02 = matchingBeacons0[2];
+
+  const targetMatrix = transpose(matrix([b00, b01, b02]));
+
+  const b10 = matchingBeacons1[0];
+  const b11 = matchingBeacons1[1];
+  const b12 = matchingBeacons1[2];
+
+  const sourceMatrix = transpose(matrix([b10, b11, b12]));
+
+  var inverse = inv(sourceMatrix);
+  var transform = multiply(targetMatrix, inverse);
+
+  return transform;
+}
+
 function solvePart1(data) {
   console.log("Solving Part 1");
   data = parseData(data);
@@ -159,7 +185,7 @@ function solvePart1(data) {
       return countMatchingMagnitudes(vectorsFromBeacon0, beacon);
     });
     const maxCount = Math.max(...count);
-    if (maxCount > 10) {
+    if (maxCount >= 12) {
       count = count.indexOf(maxCount);
     } else {
       count = undefined;
@@ -167,23 +193,55 @@ function solvePart1(data) {
     return count;
   });
 
-  var matchingBeacons = [];
+  var matchingBeacons0 = [];
+  var matchingBeacons1 = [];
   counts.forEach((value, index) => {
     if (value != undefined) {
-      matchingBeacons.push([scanner0[index], scanner1[value]]);
+      matchingBeacons0.push(scanner0[index]);
+      matchingBeacons1.push(scanner1[value]);
     }
   });
 
-  var matches = matchingBeacons.map((match) => {
-    return subtract(match[1], match[0]);
+  // var transform = getTransformation(matchingBeacons0, matchingBeacons1);
+  var transform = rotateY(rotateY(identity(3)));
+  console.log(transform);
+  transform = matrix(transform);
+
+  var transformed = matchingBeacons1.map((b) => {
+    return multiply(transform, b)
+      .toArray()
+      .map((c) => Math.round(c));
   });
 
-  var max = Math.max(...matches);
-  var min = Math.min(...matches);
-  if (max != min) {
+  console.log({ transform: transform.toArray() });
+  console.log({ matchingBeacons0 });
+  console.log({ transformed });
+
+  return;
+  var isMatch = isSameCoordinateSystem(matchingBeacons0, matchingBeacons1);
+
+  if (!isMatch) {
+    matchingBeacons1 = matchingBeacons1.map((beacon) => {
+      return rotateY(rotateY(beacon));
+    });
   }
 
-  console.log(matches);
+  isMatch = isSameCoordinateSystem(matchingBeacons0, matchingBeacons1);
+
+  console.log({ isMatch });
+}
+
+function isSameCoordinateSystem(matchingBeacons0, matchingBeacons1) {
+  var matches = matchingBeacons0.map((match, index) => {
+    return subtract(matchingBeacons1[index], match);
+  });
+
+  var match0 = matches.shift();
+  var isMatch = true;
+  matches.forEach((match) => {
+    isMatch = isMatch && identical(match, match0);
+  });
+  return isMatch;
 }
 
 function findTransformation(matches) {}

@@ -116,6 +116,49 @@ describe("parse data", () => {
 });
 
 /*
+ x  y  z  -x -y -z
+ x  z -y  -x -z  y
+ x -y -z  -x  y  z
+ x -z  y  -x  z -y
+
+ z  x  y  -z -x -y
+ z  y -x  -z -y  x
+ z -x -y  -z  x  y
+ z -y  x  -z  y -x
+
+
+
+ x  y  z  -x  y  z
+ x  z -y  -x  z -y
+ x -y -z  -x -y -z
+ x -z  y  -x -z  y
+
+ y  x  z  -y  x  z
+ y  z -x  -y  z -x
+ y -x -z  -y -x -z
+ y -z  x  -y -z  x
+
+ z  x  y  -z  x  y
+ z  y -x  -z  y -x
+ z -x -y  -z -x -y
+ z -y  x  -z -y  x
+
+ x  y  z
+-z  y  x
+-x  y -z
+ z  y -x
+
+ x  y  z
+ y -x  z
+-x -y  z
+-y  x  z
+
+ x  y  z
+ y  z -x
+
+ */
+
+/*
  x  y  z
 -x -y -z
  x  y -z
@@ -170,6 +213,23 @@ describe("parse data", () => {
  z -y -x
 -z  y  x
 
+Rotate x
+ 1  0  0
+ 0  0 -1
+ 0  1  0
+
+Rotate y
+ 0  0  1
+ 0  1  0
+-1  0  0
+
+Rotate xy
+ 0  0  1
+ 1  0  0
+ 0  1  0
+
+ x  y  z
+ z  x  y
 */
 
 const testDataTwoScanners = `
