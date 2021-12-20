@@ -18,11 +18,11 @@ const solve17 = require("./17");
 const { solve: solve18 } = require("./18");
 const { solve: solve19 } = require("./19");
 const { solve: solve20 } = require("./20");
-// const solve21 = require("./21");
-// const solve22 = require("./22");
-// const solve23 = require("./23");
-// const solve24 = require("./24");
-// const solve25 = require("./25");
+const { solve: solve21 } = require("./21");
+const { solve: solve22 } = require("./22");
+const { solve: solve23 } = require("./23");
+const { solve: solve24 } = require("./24");
+const { solve: solve25 } = require("./25");
 
 function runDay(p, data, runSecondPart, timeRun) {
   const startTime = Date.now();
@@ -87,26 +87,25 @@ function runDay(p, data, runSecondPart, timeRun) {
     case "20":
       solve20(data, runSecondPart);
       break;
-    // case "21":
-    //   solve21(data, runSecondPart);
-    //   break;
-    // case "22":
-    //   solve22(data, runSecondPart);
-    //   break;
-    // case "23":
-    //   solve23(data, runSecondPart);
-    //   break;
-    // case "24":
-    //   solve24(data, runSecondPart);
-    //   break;
-    // case "25":
-    //   solve25(data, runSecondPart);
-    //   break;
+    case "21":
+      solve21(data, runSecondPart);
+      break;
+    case "22":
+      solve22(data, runSecondPart);
+      break;
+    case "23":
+      solve23(data, runSecondPart);
+      break;
+    case "24":
+      solve24(data, runSecondPart);
+      break;
+    case "25":
+      solve25(data, runSecondPart);
+      break;
   }
   const endTime = Date.now();
   if (timeRun) {
     const duration = endTime - startTime;
-    // console.log({ duration });
     console.log(`Elapsed time: ${duration.toString()}ms`);
   }
 }
