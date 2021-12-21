@@ -1,9 +1,7 @@
 function parseData(data) {
-  // Test
-  // return [4 - 1, 8 - 1];
-
-  // Actual
-  return [8 - 1, 5 - 1];
+  data = data.map((d) => d[d.length - 1]);
+  data = data.map((d) => parseInt(d) - 1);
+  return data;
 }
 
 var value = 0;
@@ -114,6 +112,8 @@ function solvePart2(data) {
     count: 1,
   };
 
+  var possibleRolls = rollDiracDie(3);
+
   var keys = Object.keys(gameStates);
   while (keys.length > 0) {
     keys.forEach((key) => {
@@ -124,7 +124,7 @@ function solvePart2(data) {
       var currentScore = state.state[currentPlayerIndex + 1];
       var currentCount = state.count;
 
-      var rolls = rollDiracDie(3);
+      var rolls = [...possibleRolls];
 
       var newStates = rolls.map((roll) => {
         var newPosition = (roll + currentPosition) % 10;
