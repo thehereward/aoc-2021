@@ -1,10 +1,6 @@
 function parseData(data) {
-  // Actual
-  //   Player 1 starting position: 8
-  //   Player 2 starting position: 5
-
   // Test
-  return [4 - 1, 8 - 1];
+  // return [4 - 1, 8 - 1];
 
   // Actual
   return [8 - 1, 5 - 1];
@@ -104,40 +100,76 @@ function advancePlayerPositions(oldPositions, newRolls) {
   return newPositions;
 }
 
+var totalWins = [0, 0];
+
 function solvePart2(data) {
   console.log("Solving Part 2");
   var positions = parseData(data);
-  var scores = [
-    [
-      {
-        position: positions[0],
-        score: 0,
-        universes: 1,
-      },
-    ],
-    [
-      {
-        position: positions[1],
-        score: 0,
-        universes: 1,
-      },
-    ],
-  ];
-  var currentPlayer = 0;
+  var gameStates = {};
 
-  while (maxScore < 21) {
-    var roll = rollDiracDie(3);
-    var currentPositions = scores[currentPlayer];
-    var newPositions = advancePlayerPositions(currentPositions, roll);
-    scores[currentPlayer] = newPositions;
-    currentPlayer = currentPlayer == 1 ? 0 : 1;
-    console.log({ maxScore });
+  var gameState = [0, positions[0], 0, positions[1], 0];
+  var gameKey = JSON.stringify(gameState);
+  gameStates[gameKey] = {
+    state: gameState,
+    count: 1,
+  };
+
+  var keys = Object.keys(gameStates);
+  while (keys.length > 0) {
+    keys.forEach((key) => {
+      var state = gameStates[key];
+      var currentPlayer = state.state[0];
+      var currentPlayerIndex = currentPlayer * 2 + 1;
+      var currentPosition = state.state[currentPlayerIndex + 0];
+      var currentScore = state.state[currentPlayerIndex + 1];
+      var currentCount = state.count;
+
+      var rolls = rollDiracDie(3);
+
+      var newStates = rolls.map((roll) => {
+        var newPosition = (roll + currentPosition) % 10;
+        var newState = [...state.state];
+        newState[0] = currentPlayer == 0 ? 1 : 0;
+        newState[currentPlayerIndex + 0] = newPosition;
+        newState[currentPlayerIndex + 1] = currentScore + newPosition + 1;
+        return newState;
+      });
+
+      var winningStates = newStates.filter(
+        (state) => state[currentPlayerIndex + 1] >= 21
+      );
+
+      totalWins[currentPlayer] =
+        totalWins[currentPlayer] + winningStates.length * currentCount;
+
+      newStates = newStates.filter(
+        (state) => state[currentPlayerIndex + 1] < 21
+      );
+
+      var reducedNewStates = newStates.reduce((a, c) => {
+        var k = JSON.stringify(c);
+        a[k] = !a[k]
+          ? { state: c, count: 1 }
+          : { ...a[k], count: a[k].count + 1 };
+        return a;
+      }, {});
+
+      var newStateKeys = Object.keys(reducedNewStates);
+      newStateKeys.forEach((key) => {
+        var existingState = gameStates[key] || { count: 0 };
+        var newState = {
+          ...reducedNewStates[key],
+          count:
+            existingState.count + reducedNewStates[key].count * currentCount,
+        };
+        gameStates[key] = newState;
+      });
+      delete gameStates[key];
+    });
+    keys = Object.keys(gameStates);
   }
-
-  var minScore = Math.min(...scores);
-  console.log({ numberOfRolls, minScore });
-  var result = numberOfRolls * minScore;
-  console.log({ result });
+  console.log({ totalWins });
+  console.log(Math.max(...totalWins));
 }
 
 function solve(data, partTwo) {
