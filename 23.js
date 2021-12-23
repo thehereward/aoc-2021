@@ -1,4 +1,10 @@
 function parseData(data) {
+  const re = /([A-Z])#([A-Z])#([A-Z])#([A-Z])/;
+  data.forEach((line) => {
+    if (re.test(line)) {
+      line.match(re);
+    }
+  });
   return data;
 }
 
@@ -24,4 +30,5 @@ function solve(data, partTwo) {
 
 module.exports = {
   solve,
+  parseData,
 };
