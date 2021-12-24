@@ -9,7 +9,7 @@
   },
   "jest": {
     "testMatch": [
-      "**/23.test.js"
+      "**/24.test.js"
     ]
   },
   "author": "",
